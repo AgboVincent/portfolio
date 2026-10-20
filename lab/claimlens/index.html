@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClaimLens · AI motor-claims triage</title>
+<style>
+:root{
+  --bg:#0E1726; --panel:#16223A; --panel2:#1C2B48; --line:#2A3B5E;
+  --fg:#EAF0FA; --mute:#93A3BF; --brand:#3D7BFF; --ok:#2BC48A; --warn:#F5A524; --bad:#F2545B;
+  --font:-apple-system,"SF Pro Text",Inter,Roboto,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#070C16;font-family:var(--font);color:var(--fg)}
+.stage{min-height:100%;display:grid;place-items:center;padding:16px}
+.phone{width:100%;max-width:400px;height:min(840px,calc(100vh - 32px));background:var(--bg);border-radius:34px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 10px #111a2b,0 30px 80px rgba(0,0,0,.6)}
+body.rec .stage{padding:0}
+body.rec .phone{max-width:none;height:100vh;border-radius:0;box-shadow:none}
+.status{display:flex;justify-content:space-between;padding:14px 24px 6px;font-size:13px;font-weight:600}
+header{padding:8px 20px 14px;display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#7AA6FF);display:grid;place-items:center;font-weight:800}
+header h1{font-size:18px;margin:0}
+header small{display:block;color:var(--mute);font-size:12px;font-weight:500}
+main{flex:1;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;padding:0 18px 18px;overflow:auto;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .35s}
+.screen.off{transform:translateX(30px);opacity:0;pointer-events:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.big{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.pill{font-size:11px;font-weight:700;padding:4px 9px;border-radius:99px;background:var(--panel2);color:var(--mute)}
+.pill.ok{background:rgba(43,196,138,.15);color:var(--ok)} .pill.warn{background:rgba(245,165,36,.15);color:var(--warn)} .pill.bad{background:rgba(242,84,91,.15);color:var(--bad)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:15px;font:700 15px var(--font);background:var(--brand);color:#fff;cursor:pointer;transition:transform .15s,filter .2s}
+.btn:active,.btn.press{transform:scale(.97);filter:brightness(1.2)}
+.btn.ghost{background:var(--panel2);color:var(--fg)}
+.queue .item{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.queue .item:first-of-type{border-top:0}
+.av{width:38px;height:38px;border-radius:12px;background:var(--panel2);display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--mute)}
+.item b{font-size:14px} .item p{margin:2px 0 0;color:var(--mute);font-size:12px}
+.photo{position:relative;border-radius:16px;overflow:hidden;background:#24324F;aspect-ratio:4/3}
+.photo svg{width:100%;height:100%;display:block}
+.scan{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#7AA6FF,transparent);box-shadow:0 0 18px #3D7BFF;top:0;opacity:0}
+.scanning .scan{animation:scan 1.4s ease-in-out infinite;opacity:1}
+@keyframes scan{0%{top:2%}50%{top:96%}100%{top:2%}}
+.box{position:absolute;border:2px solid var(--bad);border-radius:6px;opacity:0;transform:scale(1.15);transition:all .4s}
+.box.show{opacity:1;transform:none}
+.box span{position:absolute;top:-22px;left:-2px;background:var(--bad);color:#fff;font-size:10px;font-weight:700;padding:3px 6px;border-radius:5px;white-space:nowrap}
+.box.w{border-color:var(--warn)} .box.w span{background:var(--warn);color:#1b1300}
+.parts .p{display:flex;justify-content:space-between;padding:9px 0;border-top:1px dashed var(--line);font-size:13px;opacity:0;transform:translateY(6px);transition:all .35s}
+.parts .p.show{opacity:1;transform:none}
+.parts .p:first-child{border-top:0}
+.meter{height:8px;border-radius:9px;background:var(--panel2);overflow:hidden;margin-top:8px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ok),var(--warn));transition:width 1.2s}
+.ai{font-size:13px;line-height:1.5;color:#C9D6EE;min-height:60px}
+.caret{display:inline-block;width:7px;height:14px;background:var(--brand);vertical-align:-2px;animation:bl 1s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:flex;gap:12px;padding:8px 0;font-size:13px;opacity:.35;transition:opacity .4s}
+.tl li.on{opacity:1}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--ok);margin-top:3px;flex:none}
+.tl li.on .dot{background:var(--ok)}
+.toast{position:absolute;left:18px;right:18px;bottom:18px;background:var(--ok);color:#03291a;font-weight:800;padding:14px;border-radius:14px;text-align:center;transform:translateY(120px);transition:transform .4s}
+.toast.show{transform:none}
+.tag{position:absolute;top:10px;right:10px;font-size:10px;color:var(--mute);background:rgba(0,0,0,.35);padding:3px 7px;border-radius:6px}
+</style>
+</head>
+<body>
+<div class="stage"><div class="phone">
+  <div class="status"><span>9:41</span><span>●●● 5G</span></div>
+  <header><div class="logo">CL</div><div><h1>ClaimLens</h1><small>Adjuster workspace · Lagos hub</small></div></header>
+  <main>
+    <!-- Queue -->
+    <section class="screen" id="s1">
+      <div class="card">
+        <div class="row"><span class="lbl">Today's claims</span><span class="pill ok">AI triage on</span></div>
+        <div class="row" style="margin-top:10px">
+          <div><div class="big">47</div><small style="color:var(--mute)">submitted</small></div>
+          <div><div class="big" style="color:var(--ok)">31</div><small style="color:var(--mute)">auto-cleared</small></div>
+          <div><div class="big" style="color:var(--warn)">16</div><small style="color:var(--mute)">need review</small></div>
+        </div>
+      </div>
+      <div class="card queue">
+        <span class="lbl">Review queue</span>
+        <div class="item" id="claimRow" style="cursor:pointer"><div class="av">TC</div><div style="flex:1"><b>Toyota Corolla 2016</b><p>CLM-20817 · Front collision · Lekki</p></div><span class="pill warn">New</span></div>
+        <div class="item"><div class="av">HA</div><div style="flex:1"><b>Honda Accord 2014</b><p>CLM-20811 · Rear bumper · Yaba</p></div><span class="pill">Waiting docs</span></div>
+        <div class="item"><div class="av">KR</div><div style="flex:1"><b>Kia Rio 2019</b><p>CLM-20802 · Windscreen · Ikeja</p></div><span class="pill ok">Cleared</span></div>
+        <div class="item"><div class="av">LE</div><div style="flex:1"><b>Lexus RX350 2012</b><p>CLM-20795 · Side swipe · VI</p></div><span class="pill bad">Fraud flag</span></div>
+      </div>
+    </section>
+
+    <!-- Assess -->
+    <section class="screen off" id="s2">
+      <div class="photo" id="photo">
+        <svg viewBox="0 0 400 300" aria-label="Photo of damaged car front">
+          <rect width="400" height="300" fill="#2B3A58"/><rect y="215" width="400" height="85" fill="#1E2A40"/>
+          <path d="M70 190 Q80 120 140 110 L260 110 Q320 120 330 190 Z" fill="#B8C4D8"/>
+          <path d="M120 120 L150 80 L250 80 L280 120 Z" fill="#6F86AB"/>
+          <rect x="60" y="180" width="280" height="50" rx="16" fill="#C9D3E3"/>
+          <ellipse cx="105" cy="185" rx="26" ry="13" fill="#FFF6C8"/><ellipse cx="295" cy="185" rx="26" ry="13" fill="#FFF6C8" opacity=".35"/>
+          <path d="M280 176 l12 8 -6 6 14 4 M300 178 l-10 14" stroke="#4A5670" stroke-width="2" fill="none"/>
+          <rect x="160" y="190" width="80" height="22" rx="5" fill="#8C99AF"/>
+          <path d="M250 205 l20 -6 10 12 18 -4 12 10" stroke="#5B6884" stroke-width="3" fill="none"/>
+          <path d="M240 140 q20 6 40 22" stroke="#7D8AA3" stroke-width="2" fill="none"/>
+          <rect x="70" y="228" width="50" height="40" rx="8" fill="#141C2C"/><rect x="280" y="228" width="50" height="40" rx="8" fill="#141C2C"/>
+        </svg>
+        <div class="scan"></div>
+        <div class="box" id="b1" style="left:66%;top:54%;width:22%;height:14%"><span>Headlamp R · 96%</span></div>
+        <div class="box" id="b2" style="left:60%;top:63%;width:28%;height:16%"><span>Bumper · 93%</span></div>
+        <div class="box w" id="b3" style="left:58%;top:40%;width:16%;height:16%"><span>Hood dent · 71%</span></div>
+        <div class="tag">IMG_0412.jpg · 1 of 4</div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="row"><span class="lbl">Detected damage</span><span class="pill" id="assessState">Scanning…</span></div>
+        <div class="parts" style="margin-top:8px">
+          <div class="p"><span>Right headlamp assembly · replace</span><b>₦185,000</b></div>
+          <div class="p"><span>Front bumper cover · replace</span><b>₦142,500</b></div>
+          <div class="p"><span>Hood · panel beat + spray</span><b>₦68,000</b></div>
+          <div class="p"><span>Labour (6.5 h)</span><b>₦45,500</b></div>
+        </div>
+        <div class="row" style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px"><b>Estimated repair</b><b class="big" id="total" style="font-size:22px">₦0</b></div>
+      </div>
+      <div class="card">
+        <div class="row"><span class="lbl">Fraud risk</span><b id="risk">–</b></div>
+        <div class="meter"><i id="riskBar"></i></div>
+        <p class="ai" id="aiText"></p>
+      </div>
+      <button class="btn" id="approve">Approve fast-track payout</button>
+      <div style="height:8px"></div>
+      <button class="btn ghost">Send to senior adjuster</button>
+    </section>
+
+    <!-- Done -->
+    <section class="screen off" id="s3">
+      <div class="card">
+        <span class="lbl">CLM-20817 · Toyota Corolla 2016</span>
+        <div class="big" style="margin:8px 0 2px">₦441,000</div>
+        <small style="color:var(--mute)">Approved by AI triage + adjuster A. Okafor</small>
+      </div>
+      <div class="card">
+        <span class="lbl">Claim timeline</span>
+        <ul class="tl" style="margin-top:8px">
+          <li class="on"><span class="dot"></span><div><b>Photos received</b><br><small style="color:var(--mute)">09:12 · 4 images, geo-tagged Lekki</small></div></li>
+          <li class="on"><span class="dot"></span><div><b>AI damage assessment</b><br><small style="color:var(--mute)">09:12 · 3 parts, 4.1 s</small></div></li>
+          <li class="on"><span class="dot"></span><div><b>Adjuster approval</b><br><small style="color:var(--mute)">09:14 · fast-track</small></div></li>
+          <li id="t4"><span class="dot"></span><div><b>Workshop booked</b><br><small style="color:var(--mute)">AutoFix Lekki · Thu 10:00</small></div></li>
+          <li id="t5"><span class="dot"></span><div><b>Payout to workshop</b><br><small style="color:var(--mute)">On repair completion</small></div></li>
+        </ul>
+      </div>
+      <div class="card"><span class="lbl">Policyholder notified</span><p class="ai" style="min-height:0;margin:8px 0 0">SMS + push sent: "Your claim CLM-20817 is approved. Your car is booked at AutoFix Lekki for Thursday 10:00."</p></div>
+    </section>
+    <div class="toast" id="toast">Claim approved in 2 min 06 s</div>
+  </main>
+</div></div>
+<script>
+const $=id=>document.getElementById(id);
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function go(n){['s1','s2','s3'].forEach((s,i)=>$(s).classList.toggle('off',i!==n-1))}
+async function type(el,text,speed=16){el.innerHTML='';for(const ch of text){el.innerHTML=el.textContent+ch+'<span class="caret"></span>';await wait(speed)}el.textContent=text}
+async function countTo(el,to){const t0=performance.now();return new Promise(r=>{(function f(){const k=Math.min(1,(performance.now()-t0)/1100);el.textContent='₦'+Math.round(to*k).toLocaleString();k<1?requestAnimationFrame(f):r()})()})}
+let busy=false;
+async function assess(){
+  if(busy)return;busy=true;go(2);
+  const ph=$('photo');ph.classList.add('scanning');await wait(1800);
+  for(const b of ['b1','b2','b3']){$(b).classList.add('show');await wait(380)}
+  ph.classList.remove('scanning');$('assessState').textContent='3 parts · 4.1 s';$('assessState').className='pill ok';
+  for(const p of document.querySelectorAll('.p')){p.classList.add('show');await wait(260)}
+  await countTo($('total'),441000);
+  $('riskBar').style.width='18%';$('risk').textContent='Low · 0.18';$('risk').style.color='var(--ok)';
+  await type($('aiText'),'Damage pattern matches the reported front-right collision. Photo EXIF time and GPS agree with the FNOL report. No prior claims on this VIN in 24 months. Estimate is within 6% of regional parts pricing. Recommend fast-track.');
+  busy=false;
+}
+async function approve(){
+  go(3);$('toast').classList.add('show');await wait(900);$('t4').classList.add('on');await wait(700);$('t5').classList.add('on');await wait(2200);$('toast').classList.remove('show');
+}
+$('claimRow').onclick=assess;$('approve').onclick=approve;
+async function press(el){el.classList.add('press');await wait(180);el.classList.remove('press')}
+const q=new URLSearchParams(location.search);
+if(q.has('rec'))document.body.classList.add('rec');
+if(q.has('demo'))(async()=>{await wait(1500);const r=$('claimRow');r.style.background='rgba(61,123,255,.12)';await wait(400);await assess();await wait(1500);
+  $('s2').scrollTo({top:400,behavior:'smooth'});await wait(1400);await press($('approve'));await approve();})();
+</script>
+</body>
+</html>

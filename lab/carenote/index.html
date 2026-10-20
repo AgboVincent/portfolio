@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CareNote AI · visit notes for home care</title>
+<style>
+:root{
+  --bg:#FBF7F4; --card:#FFFFFF; --line:#EFE4DC; --fg:#2A1D17; --mute:#8A766B;
+  --brand:#E0583A; --soft:#FCE9E3; --teal:#167C80; --tealsoft:#E1F2F2; --bad:#C62E2E;
+  --font:-apple-system,"SF Pro Text",Inter,Roboto,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#EADCD2;font-family:var(--font);color:var(--fg)}
+.stage{min-height:100%;display:grid;place-items:center;padding:16px}
+.phone{width:100%;max-width:400px;height:min(840px,calc(100vh - 32px));background:var(--bg);border-radius:34px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 10px #3a2a22,0 30px 80px rgba(0,0,0,.3)}
+body.rec .stage{padding:0} body.rec .phone{max-width:none;height:100vh;border-radius:0;box-shadow:none}
+.status{display:flex;justify-content:space-between;padding:14px 24px 4px;font-size:13px;font-weight:600}
+.scroll{flex:1;overflow:auto;padding:4px 18px 18px;scroll-behavior:smooth}
+.client{display:flex;gap:12px;align-items:center;padding:8px 0 14px}
+.client .ph{width:52px;height:52px;border-radius:18px;background:var(--soft);display:grid;place-items:center;font-weight:800;color:var(--brand);font-size:18px}
+.client h1{margin:0;font-size:19px}
+.client small{color:var(--mute);font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.rec-btn{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0 6px}
+.mic{width:76px;height:76px;border-radius:50%;border:0;background:var(--brand);color:#fff;font-size:28px;cursor:pointer;position:relative;transition:transform .2s}
+.mic.on{animation:ring 1.3s infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(224,88,58,.45)}100%{box-shadow:0 0 0 22px rgba(224,88,58,0)}}
+.wave{display:flex;gap:3px;height:28px;align-items:center}
+.wave i{width:4px;border-radius:3px;background:var(--brand);height:4px;transition:height .12s}
+.transcript{font-size:14px;line-height:1.55;color:#4B3A31;min-height:20px}
+.sec{opacity:0;transform:translateY(10px);transition:all .45s}
+.sec.show{opacity:1;transform:none}
+.vitals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.v{background:var(--bg);border-radius:12px;padding:10px}
+.v small{font-size:10px;color:var(--mute);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.v b{display:block;font-size:17px;margin-top:2px;font-variant-numeric:tabular-nums}
+.v.alert{background:#FBE3E3} .v.alert b{color:var(--bad)}
+.li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px dashed var(--line);font-size:13px}
+.li:first-of-type{border-top:0}
+.chk{width:18px;height:18px;border-radius:6px;background:var(--tealsoft);color:var(--teal);display:grid;place-items:center;font-size:11px;font-weight:900;flex:none}
+.flag{background:#FBE3E3;border:1px solid #F3C4C4;border-radius:14px;padding:12px;font-size:13px;line-height:1.45}
+.flag b{color:var(--bad)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:15px;font:700 15px var(--font);background:var(--teal);color:#fff;cursor:pointer;transition:transform .15s}
+.btn.press{transform:scale(.97)}
+.sent{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sent span{font-size:12px;font-weight:700;padding:6px 10px;border-radius:99px;background:var(--tealsoft);color:var(--teal);opacity:0;transform:scale(.8);transition:all .3s}
+.sent span.show{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<div class="stage"><div class="phone">
+  <div class="status"><span>16:30</span><span>●●● LTE</span></div>
+  <div class="scroll" id="scroll">
+    <div class="client"><div class="ph">MO</div><div><h1>Mrs. Mercy Okonkwo, 78</h1><small>Visit 3 of 5 this week · Caregiver: Blessing E.</small></div></div>
+    <div class="card">
+      <span class="lbl">Visit note</span>
+      <div class="rec-btn"><button class="mic" id="mic" aria-label="Record visit note">●</button><div class="wave" id="wave"></div><small style="color:var(--mute)" id="hint">Tap and speak. The note writes itself.</small></div>
+      <p class="transcript" id="tr"></p>
+    </div>
+    <div class="card sec" id="sum">
+      <span class="lbl">Structured by AI</span>
+      <div class="vitals">
+        <div class="v alert"><small>BP</small><b>158/96</b></div>
+        <div class="v"><small>Pulse</small><b>84</b></div>
+        <div class="v"><small>Glucose</small><b>7.9</b></div>
+      </div>
+      <div style="margin-top:10px">
+        <div class="li"><span class="chk">✓</span><span>Amlodipine 5 mg given at 16:05</span></div>
+        <div class="li"><span class="chk">✓</span><span>Metformin 500 mg given with lunch</span></div>
+        <div class="li"><span class="chk">✓</span><span>Ate rice and stew, about half the plate</span></div>
+        <div class="li"><span class="chk">!</span><span>Mild headache and dizziness after standing</span></div>
+      </div>
+    </div>
+    <div class="sec" id="flag" style="margin-bottom:12px">
+      <div class="flag"><b>Needs nurse review.</b> Blood pressure is above her care-plan limit (150/90) for the 2nd visit in a row, with dizziness. Suggested: nurse call within 2 hours and re-check BP at 18:00.</div>
+    </div>
+    <div class="sec" id="send">
+      <button class="btn" id="handover">Send handover</button>
+      <div class="sent"><span>Nurse Adaeze · urgent</span><span>Son: Chinedu · summary</span><span>Care plan updated</span></div>
+    </div>
+  </div>
+</div></div>
+<script>
+const $=id=>document.getElementById(id),wait=ms=>new Promise(r=>setTimeout(r,ms));
+const wave=$('wave');for(let i=0;i<28;i++)wave.appendChild(document.createElement('i'));
+let wi;function waveOn(on){clearInterval(wi);if(on)wi=setInterval(()=>wave.querySelectorAll('i').forEach(b=>b.style.height=(4+Math.random()*24)+'px'),110);else wave.querySelectorAll('i').forEach(b=>b.style.height='4px')}
+const speech="Mama took her amlodipine at about four. BP is one fifty-eight over ninety-six, pulse eighty-four, sugar seven point nine. She had her metformin with lunch, ate half her rice and stew. She says she feels a small headache and gets dizzy when she stands up.";
+let done=false;
+async function record(){
+  if(done)return;done=true;$('mic').classList.add('on');$('hint').textContent='Listening…';waveOn(true);
+  const tr=$('tr');for(const w of speech.split(' ')){tr.textContent+=(tr.textContent?' ':'')+w;await wait(95)}
+  waveOn(false);$('mic').classList.remove('on');$('hint').textContent='Recorded 0:24 · structuring…';await wait(900);$('hint').textContent='Recorded 0:24';
+  for(const id of ['sum','flag','send']){$(id).classList.add('show');await wait(500);$('scroll').scrollTop=$('scroll').scrollHeight}
+}
+async function handover(){for(const s of document.querySelectorAll('.sent span')){s.classList.add('show');await wait(350)}$('handover').textContent='Handover sent';$('handover').style.background='var(--fg)'}
+$('mic').onclick=record;$('handover').onclick=handover;
+const p=new URLSearchParams(location.search);if(p.has('rec'))document.body.classList.add('rec');
+if(p.has('demo'))(async()=>{await wait(1400);await record();await wait(1800);const b=$('handover');b.classList.add('press');await wait(200);b.classList.remove('press');await handover();})();
+</script>
+</body>
+</html>

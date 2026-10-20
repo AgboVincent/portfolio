@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FleetPulse · AI dispatch copilot</title>
+<style>
+:root{
+  --bg:#F3F6F4; --card:#FFFFFF; --line:#DDE5E0; --fg:#0F1F19; --mute:#5D7268;
+  --brand:#0B8F5B; --brand2:#E6F5EE; --warn:#D9822B; --bad:#D64545; --map:#E4ECE7; --road:#FFFFFF;
+  --font:-apple-system,"SF Pro Text",Inter,Roboto,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#C9D6CF;font-family:var(--font);color:var(--fg)}
+.stage{min-height:100%;display:grid;place-items:center;padding:16px}
+.phone{width:100%;max-width:400px;height:min(840px,calc(100vh - 32px));background:var(--bg);border-radius:34px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 10px #1a2a23,0 30px 80px rgba(0,0,0,.35)}
+body.rec .stage{padding:0} body.rec .phone{max-width:none;height:100vh;border-radius:0;box-shadow:none}
+.status{display:flex;justify-content:space-between;padding:14px 24px 4px;font-size:13px;font-weight:600}
+header{padding:6px 18px 10px;display:flex;justify-content:space-between;align-items:center}
+header h1{margin:0;font-size:20px;letter-spacing:-.01em}
+header small{color:var(--mute);font-size:12px;display:block}
+.live{font-size:11px;font-weight:700;color:var(--brand);background:var(--brand2);padding:5px 9px;border-radius:99px}
+.live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--brand);margin-right:6px;animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px}
+.kpi small{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);font-weight:700}
+.kpi b{display:block;font-size:20px;font-variant-numeric:tabular-nums;margin-top:2px;transition:color .4s}
+.map{margin:10px 18px;border-radius:18px;overflow:hidden;border:1px solid var(--line);height:230px;position:relative;background:var(--map)}
+.map svg{width:100%;height:100%;display:block}
+.rider{transition:transform 1.6s cubic-bezier(.4,0,.2,1)}
+.chat{flex:1;overflow:auto;padding:0 18px 8px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:88%;padding:10px 12px;border-radius:16px;font-size:13px;line-height:1.45;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.me{align-self:flex-end;background:var(--fg);color:#fff;border-bottom-right-radius:4px}
+.bot{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bot .who{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--brand);text-transform:uppercase;margin-bottom:4px}
+.risk{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px dashed var(--line);font-size:12px}
+.risk em{font-style:normal;font-weight:800;color:var(--bad)}
+.act{margin-top:8px;display:flex;gap:6px}
+.act button{flex:1;border:0;border-radius:10px;padding:10px;font:700 12px var(--font);cursor:pointer;background:var(--brand);color:#fff;transition:transform .15s}
+.act button.sec{background:var(--brand2);color:var(--brand)}
+.act button.press{transform:scale(.95)}
+.composer{display:flex;gap:8px;padding:10px 18px 18px;border-top:1px solid var(--line);background:var(--card)}
+.composer input{flex:1;border:1px solid var(--line);border-radius:12px;padding:12px;font:14px var(--font);background:var(--bg);color:var(--fg)}
+.composer button{border:0;background:var(--brand);color:#fff;border-radius:12px;width:46px;font-size:18px;cursor:pointer}
+.chips{display:flex;gap:6px;padding:0 18px 8px;overflow:auto}
+.chips span{white-space:nowrap;font-size:11px;font-weight:600;padding:6px 10px;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--mute);cursor:pointer}
+.typing{display:inline-flex;gap:3px}.typing i{width:6px;height:6px;border-radius:50%;background:var(--mute);animation:pulse 1s infinite}.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+</style>
+</head>
+<body>
+<div class="stage"><div class="phone">
+  <div class="status"><span>14:05</span><span>●●● 4G</span></div>
+  <header><div><h1>FleetPulse</h1><small>Pharma last-mile · Lagos Mainland</small></div><span class="live">Live</span></header>
+  <div class="kpis">
+    <div class="kpi"><small>On-time</small><b id="sla" style="color:var(--warn)">91.4%</b></div>
+    <div class="kpi"><small>In transit</small><b>38</b></div>
+    <div class="kpi"><small>Riders</small><b>22</b></div>
+  </div>
+  <div class="map">
+    <svg viewBox="0 0 360 230" aria-label="Live delivery map">
+      <rect width="360" height="230" fill="var(--map)"/>
+      <path d="M0 60 H360 M0 150 H360 M80 0 V230 M200 0 V230 M300 0 V230 M0 210 L360 20" stroke="var(--road)" stroke-width="9" fill="none"/>
+      <path d="M0 60 H360 M0 150 H360 M80 0 V230 M200 0 V230 M300 0 V230" stroke="#CFDAD4" stroke-width="1" stroke-dasharray="4 5" fill="none"/>
+      <rect x="215" y="72" width="70" height="60" rx="6" fill="#D2E4DA"/><text x="250" y="106" font-size="9" text-anchor="middle" fill="#5D7268">Yaba</text>
+      <rect x="95" y="165" width="90" height="50" rx="6" fill="#D2E4DA"/><text x="140" y="194" font-size="9" text-anchor="middle" fill="#5D7268">Surulere</text>
+      <rect x="10" y="72" width="60" height="64" rx="6" fill="#D2E4DA"/><text x="40" y="107" font-size="9" text-anchor="middle" fill="#5D7268">Ikeja</text>
+      <path id="jam" d="M200 40 V120" stroke="#D64545" stroke-width="6" stroke-linecap="round" opacity=".75"/>
+      <g fill="#0F1F19"><rect x="72" y="52" width="16" height="16" rx="4"/><text x="80" y="64" font-size="10" fill="#fff" text-anchor="middle">H</text></g>
+      <g id="dests">
+        <circle cx="300" cy="25" r="6" fill="#fff" stroke="#D64545" stroke-width="3"/>
+        <circle cx="330" cy="150" r="6" fill="#fff" stroke="#D64545" stroke-width="3"/>
+        <circle cx="200" cy="200" r="6" fill="#fff" stroke="#D64545" stroke-width="3"/>
+      </g>
+      <g class="rider" id="r1"><circle cx="200" cy="80" r="9" fill="#D9822B"/><text x="200" y="84" font-size="9" fill="#fff" text-anchor="middle" font-weight="700">K</text></g>
+      <g class="rider" id="r2"><circle cx="120" cy="150" r="9" fill="#0B8F5B"/><text x="120" y="154" font-size="9" fill="#fff" text-anchor="middle" font-weight="700">T</text></g>
+      <g class="rider" id="r3"><circle cx="300" cy="120" r="9" fill="#0B8F5B"/><text x="300" y="124" font-size="9" fill="#fff" text-anchor="middle" font-weight="700">A</text></g>
+      <g class="rider" id="r4"><circle cx="40" cy="150" r="9" fill="#0B8F5B"/><text x="40" y="154" font-size="9" fill="#fff" text-anchor="middle" font-weight="700">B</text></g>
+    </svg>
+  </div>
+  <div class="chips"><span>Riders idle &gt; 10 min</span><span>Cold-chain alerts</span><span>Today's failed drops</span></div>
+  <div class="chat" id="chat">
+    <div class="msg bot"><div class="who">Dispatch copilot</div>Good afternoon, Ada. 38 orders are moving. Ask me anything about today's fleet.</div>
+  </div>
+  <form class="composer" id="form"><input id="q" placeholder="Ask about orders, riders, SLAs…" autocomplete="off"><button aria-label="Send">↑</button></form>
+</div></div>
+<script>
+const $=id=>document.getElementById(id), wait=ms=>new Promise(r=>setTimeout(r,ms)), chat=$('chat');
+function add(html,cls){const d=document.createElement('div');d.className='msg '+cls;d.innerHTML=html;chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d}
+async function ask(text){
+  add(text.replace(/</g,'&lt;'),'me');$('q').value='';
+  const t=add('<span class="typing"><i></i><i></i><i></i></span>','bot');await wait(1400);
+  t.innerHTML=`<div class="who">Dispatch copilot</div>3 deliveries are likely to miss their 60-min SLA because of heavy traffic on Herbert Macaulay Way.
+  <div class="risk" style="margin-top:6px"><span>#PM-4471 · insulin (cold-chain) → Yaba</span><em>+22 min</em></div>
+  <div class="risk"><span>#PM-4475 · antimalarials → Ebute Metta</span><em>+14 min</em></div>
+  <div class="risk"><span>#PM-4480 · antibiotics → Surulere</span><em>+9 min</em></div>
+  <div style="margin-top:6px">Fix: hand #PM-4471 to Aisha (idle, 1.2 km away) and send Kunle's other two drops via Ikorodu Rd. Expected on-time rate: 98%.</div>
+  <div class="act"><button id="apply">Apply reroute</button><button class="sec">Notify pharmacies</button></div>`;
+  chat.scrollTop=chat.scrollHeight;$('apply').onclick=apply;
+}
+async function apply(){
+  $('r3').style.transform='translate(0px,-95px)';$('r1').style.transform='translate(-120px,70px)';$('r2').style.transform='translate(80px,50px)';
+  $('jam').style.transition='opacity 1s';$('jam').style.opacity='.25';
+  await wait(1500);let v=91.4;const iv=setInterval(()=>{v=Math.min(98.1,v+0.4);$('sla').textContent=v.toFixed(1)+'%';if(v>=98.1){clearInterval(iv);$('sla').style.color='var(--brand)'}},40);
+  await wait(400);add('<div class="who">Dispatch copilot</div>Done. Riders and pharmacies have been notified. Aisha picks up #PM-4471 in 4 min, with the cold box at 4.2 °C.','bot');
+}
+$('form').onsubmit=e=>{e.preventDefault();const v=$('q').value.trim();if(v)ask(v)};
+document.querySelectorAll('.chips span').forEach(c=>c.onclick=()=>ask(c.textContent));
+const p=new URLSearchParams(location.search);if(p.has('rec'))document.body.classList.add('rec');
+if(p.has('demo'))(async()=>{await wait(1500);const s='Which deliveries will miss SLA in the next hour?';for(const ch of s){$('q').value+=ch;await wait(40)}await wait(400);await ask(s);await wait(2600);const b=$('apply');b.classList.add('press');await wait(200);b.classList.remove('press');await apply();})();
+</script>
+</body>
+</html>

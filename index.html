@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vincent Agbo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Vincent Agbo, mobile engineer in Lagos. Flutter and React Native apps for insurance, health, logistics and fintech, built with an AI-first workflow.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a release log. Hero thesis, then AI Lab (video builds), shipped apps as dated release rows, workflow, contact. Danfo-yellow marks what's new. */
+:root{
+  --bg:#F5F5F1; --surface:#FFFFFF; --ink:#14161A; --mute:#5E636B; --line:#DCDDD6;
+  --danfo:#F4C21B; --danfo-ink:#14161A; --link:#1F4FD1;
+  --display:"Archivo","Arial Narrow",Helvetica,Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#101215;--surface:#181B20;--ink:#ECEDE8;--mute:#9AA0A8;--line:#2A2E35;--danfo:#F4C21B;--danfo-ink:#14161A;--link:#8FB0FF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101215;--surface:#181B20;--ink:#ECEDE8;--mute:#9AA0A8;--line:#2A2E35;--danfo:#F4C21B;--danfo-ink:#14161A;--link:#8FB0FF;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);margin:0;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--link)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--danfo);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.mono{font-family:var(--mono)}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+mark{background:var(--danfo);color:var(--danfo-ink);padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+nav .me{font:800 15px var(--display);font-stretch:115%;text-decoration:none;color:var(--ink);letter-spacing:.01em}
+nav ul{display:flex;gap:20px;list-style:none;margin:0;padding:0;font-size:14px}
+nav ul a{color:var(--mute);text-decoration:none}
+nav ul a:hover{color:var(--ink)}
+@media (max-width:640px){nav ul li:not(:last-child){display:none}}
+
+.hero{padding-block:72px 56px}
+.hero .eyebrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.avail{display:inline-flex;align-items:center;gap:7px;color:var(--ink)}
+.avail::before{content:"";width:8px;height:8px;border-radius:50%;background:#2BB673}
+.hero h1{font-size:clamp(44px,9vw,112px);font-weight:900;font-stretch:125%;line-height:.92;letter-spacing:-.02em;margin-top:18px}
+.hero h1 span{display:block;font-stretch:62%;font-weight:700;color:var(--mute);font-size:.42em;letter-spacing:0;margin-top:14px;line-height:1.1}
+.thesis{font-size:clamp(19px,2.3vw,24px);line-height:1.45;max-width:30em;margin:28px 0 0}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);margin-top:48px}
+.facts div{padding:14px 16px 0 0}
+.facts b{display:block;font:800 clamp(28px,4vw,40px)/1 var(--display);font-stretch:110%;font-variant-numeric:tabular-nums}
+.facts small{color:var(--mute);font-size:13px;line-height:1.35;display:block;margin-top:6px}
+@media (max-width:700px){.facts{grid-template-columns:repeat(2,1fr);row-gap:18px}}
+
+section{padding-block:64px;border-top:1px solid var(--line)}
+.shead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px 48px;align-items:end;margin-bottom:36px}
+.shead h2{font-size:clamp(32px,5vw,56px);font-weight:900;font-stretch:118%;line-height:.98;letter-spacing:-.015em}
+.shead p{margin:0;color:var(--mute);max-width:36em}
+@media (max-width:760px){.shead{grid-template-columns:1fr}}
+
+.lab{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+@media (max-width:900px){.lab{grid-template-columns:1fr;max-width:520px}}
+.build{display:flex;flex-direction:column;gap:14px;min-width:0}
+.screen{position:relative;border-radius:28px;overflow:hidden;background:#0B0D10;border:8px solid #0B0D10;aspect-ratio:390/844;max-width:100%;box-shadow:0 20px 50px -20px rgba(0,0,0,.45)}
+.screen video{width:100%;height:100%;object-fit:cover;display:block}
+.screen .new{position:absolute;top:10px;left:10px;font:600 11px var(--mono);background:var(--danfo);color:var(--danfo-ink);padding:3px 8px;border-radius:4px;letter-spacing:.06em}
+.build h3{font-size:26px;font-weight:800;font-stretch:112%}
+.build .sector{font:500 12px var(--mono);color:var(--mute);letter-spacing:.06em;text-transform:uppercase}
+.build p{margin:0;font-size:15px}
+.build dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;font-size:14px}
+.build dt{font:500 12px var(--mono);color:var(--mute);padding-top:2px}
+.build dd{margin:0}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
+.b{display:inline-flex;align-items:center;gap:6px;font:600 14px var(--body);text-decoration:none;padding:10px 14px;border-radius:8px;border:1px solid var(--ink);color:var(--ink)}
+.b.solid{background:var(--ink);color:var(--bg)}
+.b:hover{background:var(--danfo);color:var(--danfo-ink);border-color:var(--danfo)}
+.note{font-size:13px;color:var(--mute);margin-top:28px;max-width:60em}
+
+.log{border-top:1px solid var(--ink)}
+.rel{display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,260px);gap:8px 32px;padding:22px 0;border-bottom:1px solid var(--line)}
+.rel time{font:500 13px var(--mono);color:var(--mute);padding-top:6px;font-variant-numeric:tabular-nums}
+.rel h3{font-size:24px;font-weight:800;font-stretch:108%}
+.rel .co{color:var(--mute);font-size:14px;margin-left:6px;font-family:var(--body);font-weight:400}
+.rel p{margin:6px 0 0;max-width:42em}
+.stack{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.stack span{font:500 12px var(--mono);border:1px solid var(--line);padding:2px 8px;border-radius:4px;color:var(--mute)}
+.stores{display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding-top:6px}
+.stores a{font-size:14px;font-weight:600;text-decoration:none;display:inline-flex;gap:6px;align-items:center}
+.stores a:hover{text-decoration:underline}
+.stores em{font-size:13px;color:var(--mute);font-style:normal}
+@media (max-width:760px){.rel{grid-template-columns:1fr}.rel time{padding:0}}
+
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;counter-reset:s;border-top:1px solid var(--ink)}
+.flow li{list-style:none;padding:20px 20px 0 0;counter-increment:s}
+.flow li::before{content:"0" counter(s);font:500 13px var(--mono);color:var(--mute);display:block;margin-bottom:10px}
+.flow h3{font-size:20px;font-weight:800;font-stretch:108%;margin-bottom:8px}
+.flow p{margin:0;font-size:15px;color:var(--mute)}
+@media (max-width:860px){.flow{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:12px}}
+@media (max-width:480px){.flow{grid-template-columns:1fr}}
+.tools{margin-top:40px;display:flex;flex-wrap:wrap;gap:8px}
+.tools span{font-size:14px;padding:6px 12px;border-radius:99px;background:var(--surface);border:1px solid var(--line)}
+
+.earlier{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.earlier div{min-width:0}
+.earlier h3{font-size:18px;font-weight:800;font-stretch:105%}
+.earlier p{margin:6px 0 0;font-size:15px;color:var(--mute)}
+@media (max-width:760px){.earlier{grid-template-columns:1fr}}
+
+.contact{background:var(--danfo);color:var(--danfo-ink);border-top:0}
+.contact h2{font-size:clamp(36px,7vw,84px);font-weight:900;font-stretch:125%;line-height:.95;letter-spacing:-.02em;max-width:12em}
+.contact .rows{margin-top:36px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;border-top:2px solid var(--danfo-ink);padding-top:16px}
+.contact .rows div{min-width:0}
+.contact small{font:500 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;display:block;opacity:.75}
+.contact .rows a,.contact .rows span{color:var(--danfo-ink);font-weight:600;overflow-wrap:anywhere;user-select:all}
+.contact button{margin-top:6px;font:600 12px var(--mono);background:transparent;border:1px solid var(--danfo-ink);color:var(--danfo-ink);border-radius:4px;padding:3px 8px;cursor:pointer}
+@media (max-width:760px){.contact .rows{grid-template-columns:1fr 1fr}}
+footer{padding-block:24px;font-size:13px;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="me" href="#top">VINCENT AGBO</a>
+  <ul><li><a href="#lab">AI Lab</a></li><li><a href="#work">Shipped apps</a></li><li><a href="#how">How I build</a></li><li><a href="#contact">Contact</a></li></ul>
+</div></nav>
+
+<header class="hero wrap" id="top">
+  <div class="eyebrow"><span>Mobile engineer · Lagos, Nigeria</span><span class="avail">Open to remote roles</span></div>
+  <h1>Vincent Agbo<span>Flutter · React Native · Android</span></h1>
+  <p class="thesis">I build the mobile apps people use for <mark>car insurance claims, home healthcare, medicine delivery and payments</mark>. Today I ship with AI as a pair programmer, and I put AI features into the products themselves.</p>
+  <div class="facts">
+    <div><b>5+</b><small>years shipping mobile apps</small></div>
+    <div><b>10+</b><small>production apps across insurance, health, logistics and fintech</small></div>
+    <div><b>7</b><small>apps live on Google Play and the App Store</small></div>
+    <div><b>3</b><small>AI concept apps, problem to recorded demo</small></div>
+  </div>
+</header>
+
+<section id="lab"><div class="wrap">
+  <div class="shead">
+    <h2>AI Lab</h2>
+    <p>Three working prototypes for problems I've seen up close on real teams. Each one puts an AI step in the middle of a business process and shows the result in a screen a field worker can use. The videos are screen recordings of the working builds.</p>
+  </div>
+  <div class="lab">
+    <article class="build">
+      <div class="screen"><span class="new">NEW</span><video src="media/claimlens.mp4" poster="media/claimlens.jpg" autoplay muted loop playsinline preload="metadata" aria-label="ClaimLens demo recording"></video></div>
+      <span class="sector">Insurance · claims operations</span>
+      <h3>ClaimLens</h3>
+      <p>An adjuster opens a motor claim and the photos are scanned for damaged parts. The app prices the repair in naira, scores fraud risk and writes a recommendation, so clean claims are approved in minutes.</p>
+      <dl>
+        <dt>AI step</dt><dd>Vision damage detection, cost estimate, fraud reasoning</dd>
+        <dt>Roots</dt><dd>Curacel auto-claims (bounding boxes) and Scudo</dd>
+      </dl>
+      <div class="btns"><a class="b solid" href="lab/claimlens/index.html" target="_blank" rel="noopener">Try the live demo</a></div>
+    </article>
+    <article class="build">
+      <div class="screen"><span class="new">NEW</span><video src="media/fleetpulse.mp4" poster="media/fleetpulse.jpg" autoplay muted loop playsinline preload="metadata" aria-label="FleetPulse demo recording"></video></div>
+      <span class="sector">Logistics · pharma last mile</span>
+      <h3>FleetPulse</h3>
+      <p>A dispatcher asks in plain English which deliveries will miss their SLA. The copilot finds the at-risk orders, including a cold-chain insulin drop, and proposes a reroute that is applied with one tap.</p>
+      <dl>
+        <dt>AI step</dt><dd>Natural-language ops queries, ETA risk, reroute plan</dd>
+        <dt>Roots</dt><dd>Pillmova, Zenon Go and Ntisa logistics apps</dd>
+      </dl>
+      <div class="btns"><a class="b solid" href="lab/fleetpulse/index.html" target="_blank" rel="noopener">Try the live demo</a></div>
+    </article>
+    <article class="build">
+      <div class="screen"><span class="new">NEW</span><video src="media/carenote.mp4" poster="media/carenote.jpg" autoplay muted loop playsinline preload="metadata" aria-label="CareNote AI demo recording"></video></div>
+      <span class="sector">Health · home care</span>
+      <h3>CareNote AI</h3>
+      <p>A caregiver speaks for 20 seconds after a visit. The note becomes structured vitals, medications and symptoms, flags a blood pressure reading against the care plan, and sends the right handover to the nurse and family.</p>
+      <dl>
+        <dt>AI step</dt><dd>Voice to structured record, care-plan rule checks</dd>
+        <dt>Roots</dt><dd>CareNestPro Connect, Curacel Health, Homics</dd>
+      </dl>
+      <div class="btns"><a class="b solid" href="lab/carenote/index.html" target="_blank" rel="noopener">Try the live demo</a></div>
+    </article>
+  </div>
+  <p class="note">The lab builds are front-end prototypes with scripted model responses so the flow can be shown end to end. In production, each AI step would call a vision or language model API behind the app's own backend.</p>
+</div></section>
+
+<section id="work"><div class="wrap">
+  <div class="shead">
+    <h2>Shipped apps</h2>
+    <p>Production apps I built, led or maintained, newest first. Most are Flutter with Riverpod or BLoC; Curacel Health is React Native with Redux.</p>
+  </div>
+  <div class="log">
+    <div class="rel"><time>2025 – now</time><div><h3>Scudo <span class="co">Arravo · auto insurance</span></h3><p>New features, bug fixes, performance work and store releases for a car insurance app. Automated tests keep releases consistent.</p><div class="stack"><span>Flutter</span><span>Riverpod</span><span>Automated tests</span></div></div>
+      <div class="stores"><a href="https://play.google.com/store/apps/details?id=co.scudoapp.mobile" target="_blank" rel="noopener">Google Play ↗</a><a href="https://apps.apple.com/ng/app/scudo/id6771684105" target="_blank" rel="noopener">App Store ↗</a></div></div>
+    <div class="rel"><time>2025 – 2026</time><div><h3>CareNestPro Connect <span class="co">CareNestPro · healthcare</span></h3><p>A multi-role healthcare app built from UI designs into production Flutter code.</p><div class="stack"><span>Flutter</span><span>Riverpod</span><span>Multi-role</span></div></div>
+      <div class="stores"><a href="https://play.google.com/store/apps/details?id=com.carenestpro.care_app" target="_blank" rel="noopener">Google Play ↗</a><a href="https://apps.apple.com/ng/app/carenestpro-connect/id6758614911" target="_blank" rel="noopener">App Store ↗</a></div></div>
+    <div class="rel"><time>2024 – 2025</time><div><h3>Metricreg <span class="co">Taremtec · contract</span></h3><p>Maintenance, fixes and Play Store updates, including bringing the app in line with Google's new policy requirements.</p><div class="stack"><span>Flutter</span><span>Play policy compliance</span></div></div>
+      <div class="stores"><a href="https://play.google.com/store/apps/details?id=com.metricreg" target="_blank" rel="noopener">Google Play ↗</a></div></div>
+    <div class="rel"><time>2024</time><div><h3>Zenon Go <span class="co">Zenon Mobile · lead developer</span></h3><p>Led the build of a multi-role commerce and delivery platform, from architecture to store release.</p><div class="stack"><span>Flutter</span><span>Riverpod</span><span>Lead</span></div></div>
+      <div class="stores"><a href="https://play.google.com/store/apps/details?id=com.zenon_mobile.app" target="_blank" rel="noopener">Google Play ↗</a><a href="https://apps.apple.com/ng/app/zenon-go/id6762492528" target="_blank" rel="noopener">App Store ↗</a></div></div>
+    <div class="rel"><time>2024</time><div><h3>Motopay <span class="co">Sujimoto Holdings · fintech</span></h3><p>Built a fintech app with the feature depth of Opay and Moniepoint, with maintainable, scalable Flutter code.</p><div class="stack"><span>Flutter</span><span>Riverpod</span><span>Payments</span></div></div>
+      <div class="stores"><em>Internal release</em></div></div>
+    <div class="rel"><time>2024</time><div><h3>Pillmova <span class="co">OneHealth Nigeria · logistics</span></h3><p>Features, fixes, performance work and store releases for a medicine delivery app.</p><div class="stack"><span>Flutter</span><span>BLoC</span></div></div>
+      <div class="stores"><a href="https://play.google.com/store/apps/details?id=com.onehealthng.pillmova" target="_blank" rel="noopener">Google Play ↗</a><a href="https://apps.apple.com/app/pillmova/id6445840095" target="_blank" rel="noopener">App Store ↗</a></div></div>
+    <div class="rel"><time>2021 – 2024</time><div><h3>Curacel Health and Auto Claims <span class="co">Curacel (YC)</span></h3><p>Took ownership of the enrollee app v2 in React Native and shipped it to both stores and as a PWA. On the Flutter auto-claims app, integrated an AI/ML API and custom-painted bounding boxes over damaged vehicle parts. Added localization, and built an insurance mock-up for Balloon Africa.</p><div class="stack"><span>React Native</span><span>Redux</span><span>Flutter</span><span>BLoC</span><span>AI/ML API</span></div></div>
+      <div class="stores"><a href="https://play.google.com/store/apps/details?id=com.curacel.app" target="_blank" rel="noopener">Google Play ↗</a><a href="https://apps.apple.com/ng/app/curacel-health/id6476590659" target="_blank" rel="noopener">App Store ↗</a><a href="https://enrollee.curacel.co" target="_blank" rel="noopener">Web app ↗</a></div></div>
+    <div class="rel"><time>2023</time><div><h3>Homics <span class="co">Ahegel · health tech</span></h3><p>Testable, scalable Flutter app built with a volunteer team.</p><div class="stack"><span>Flutter</span><span>BLoC</span></div></div>
+      <div class="stores"><em>Volunteer project</em></div></div>
+    <div class="rel"><time>2021 – 2022</time><div><h3>FMN e-commerce and Ntisa <span class="co">Waje Smart Solutions</span></h3><p>Published the Flour Mills of Nigeria e-commerce app to both stores. Later worked on Ntisa, a logistics app with Firebase, push notifications and Google Cloud APIs.</p><div class="stack"><span>Flutter</span><span>BLoC</span><span>Firebase</span></div></div>
+      <div class="stores"><a href="https://play.google.com/store/apps/details?id=com.wajesmartapp.waje_smart_app" target="_blank" rel="noopener">Google Play ↗</a></div></div>
+    <div class="rel"><time>2021</time><div><h3>Fundvine fintech apps <span class="co">Fundvine Securities</span></h3><p>Investment apps built with BLoC and Provider, with a focus on reusable, modular code.</p><div class="stack"><span>Flutter</span><span>BLoC</span><span>Provider</span></div></div>
+      <div class="stores"><em>Internal release</em></div></div>
+  </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <div class="shead">
+    <h2>How I build now</h2>
+    <p>AI writes a lot of code quickly. The value I add is knowing which code should exist, checking that it's right, and getting it through review, the stores and real users. This is the loop I use on every feature.</p>
+  </div>
+  <ol class="flow" style="padding:0;margin:0">
+    <li><h3>Frame the problem</h3><p>Start from the business process: who taps what, what data moves, what can go wrong. Write it as a short spec before any code.</p></li>
+    <li><h3>Pair with AI</h3><p>Use an AI coding agent to scaffold screens, state, models and API layers from the spec, then read and reshape every diff.</p></li>
+    <li><h3>Test and review</h3><p>Generate widget and unit tests alongside the code, run them in CI, and use AI review as a second pass on edge cases.</p></li>
+    <li><h3>Ship and measure</h3><p>Release through Play Console and App Store Connect, watch crash and policy reports, and feed what I learn into the next spec.</p></li>
+  </ol>
+  <div class="tools"><span>Flutter</span><span>Dart</span><span>Riverpod</span><span>BLoC</span><span>React Native</span><span>Redux</span><span>Java / Android SDK</span><span>Firebase</span><span>REST APIs</span><span>Xcode</span><span>AI coding agents</span><span>LLM and vision APIs</span><span>Prompt design</span><span>Automated testing</span></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="shead"><h2>Earlier work</h2><p>Where it started: native Android, teaching others, and training programs.</p></div>
+  <div class="earlier">
+    <div><h3>Driver travel requests</h3><p>Freelance Java Android app with a Firebase backend, 2019–2021. <a href="https://zenonmobile.netlify.app" target="_blank" rel="noopener">See it ↗</a></p></div>
+    <div><h3>Community mentor</h3><p>Named community mentor in Android development by the Nigerian Society of Engineers student wing, 2019. <a href="https://community-mentor.netlify.app" target="_blank" rel="noopener">See it ↗</a></p></div>
+    <div><h3>Education and training</h3><p>B.Eng Electronic Engineering, University of Nigeria Nsukka (Second Class Upper). Google Africa Developer Scholarship 2020 and 2021 with Andela.</p></div>
+  </div>
+</div></section>
+
+<section class="contact" id="contact"><div class="wrap">
+  <h2>Have an app to build or fix? Let's talk.</h2>
+  <div class="rows">
+    <div><small>Email</small><span id="em">agbovincent100@gmail.com</span><br><button type="button" data-copy="em">Copy</button></div>
+    <div><small>Phone / WhatsApp</small><span id="ph">+234 816 418 5186</span><br><button type="button" data-copy="ph">Copy</button></div>
+    <div><small>GitHub</small><a href="https://github.com/AgboVincent" target="_blank" rel="noopener">github.com/AgboVincent</a></div>
+    <div><small>Based in</small><span>Anthony Village, Lagos (WAT, UTC+1)</span></div>
+  </div>
+</div></section>
+<footer class="wrap">© 2026 Vincent Onyekachi Agbo. Built with an AI pair programmer, reviewed by a human one.</footer>
+<script>
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{
+  const el=document.getElementById(b.dataset.copy),t=el.textContent;
+  const done=()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1500)};
+  try{navigator.clipboard.writeText(t).then(done,()=>sel(el))}catch(e){sel(el)}
+}));
+function sel(el){const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r)}
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.querySelectorAll('video').forEach(v=>{v.removeAttribute('autoplay');v.pause()});
+</script>
+
+</body>
+</html>
